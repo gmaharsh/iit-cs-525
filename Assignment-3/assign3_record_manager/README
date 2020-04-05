@@ -1,0 +1,117 @@
+                                                 Assignment 3  -  Record Manager
+                                                
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+GROUP MEMBERS
+
+1. Maharsh Hetal Gheewala  (A20442506)
+2. Nihar Darji (A20459275) 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Goal : To actualize a record manager that handles tables with a fixed mapping, wherein the customers can embed, erase ,update and sweep through the records in a table.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Code Structure:
+---------------
+The Buffer Manager is utilized to get to pages by means of Buffer Pool utilizing a page substitution policy.The Storage Manager is utilized in a roundabout way to perform procedure on page document on plate.
+
+TABLE AND RECORD MANAGER FUNCTIONS:
+----------------------------------
+The record manager related functions are used to initialize and shutdown the record manager.
+1. initRecordManager
+	- initializes the storage manager.
+
+2. shutdownRecordManager
+	- shuts down the record manager and shuts down the buffer manager in turn.
+	- deallocates the memory for the data structure and writes all dirty pages to the disk.
+
+3. createTable
+	- creates a table in the memory and initializes the buffer manager.
+	- the buffer manager is init with 40 pages and FIFO strategy.
+	- the table is created using the storage manager and written to the disk
+4. openTable
+	- the table is opened from memory and the state variables are set.
+5. closeTable
+	- the table is closed and the contents of the pages marked dirty are forced to the disk to maintain consistency of the database.
+6. getNumTuples
+	- returns the number of rows in the table.
+
+6. deleteTable():
+- This function deletes the table with name specified by the parameter 'name'.
+- It calls the Storage Manager's function destroyPageFile.
+- destroyPageFile function deletes the page from disk and de-allocates one memory space allocated for that mechanism.
+
+6. getNumTuples
+	- returns the number of rows in the table.
+
+RECORD FUNCTIONS:
+----------------
+
+These functions are used to retrieve a record with a certain RID, to delete a record with a certain RID, to insert a new record, and to update an existing record with new values.
+
+1. insertRecord
+	- inserts a record in to  the table.
+	- it sets the ID for each record based on the page number and the slot.
+	- each page can handle PAGE_SIZE/record_size number of records.
+	- the records are handled via the buffer manager with minimum amount of buffer miss.
+
+2. deleteRecord
+	- the record is deleted from the table.
+	- find the location of the record using the offset and delete the record using the keyword '-'
+	- mark the page dirty and write it to the disk.
+
+3. updateRecord
+	- update the record in the table.
+	- using the RID find the location of the record in the table and update the record with the new value of the record.
+
+4. getRecord
+	- get the record associated with the RID.
+	- go to the location pointed by the RID structure and fetch the record and copy it into the record data structure.
+
+        
+
+SCAN FUNCTIONS:
+--------------
+
+These functions are used to retrieves all tuples from a table that fulfill a certain condition. Starting a scan initializes the RM_ScanHandle data structure passed as an argument to startScan.Then call to the next method is made which returns the next tuple that fulfills the scan condition. If NULL is passed as a scan condition, it returns RC_SCAN_CONDITION_NOT_FOUND. It then  returns RC_RM_NO_MORE_TUPLES once the scan is complete or else RC_OK is returned. (unless an error occurs).
+
+1. startScan
+	- initialize the scan handler with the condition for scan and the table associated with the scan.
+
+2. next
+	- returns the record that match the condition.
+	- it maintains a state of the amount of records scanned and it fetches the next record when the function is called again.
+	- it checks if the record matches the condition provied, it returns only if it matches the condition until there's a record that matches that condition.
+
+3. closeScan
+	- it closes the scan handler.
+
+
+SCHEMA FUNCTIONS:
+----------------
+These functions are used to return the size in bytes of records for a given schema and create a new schema. 
+
+1. getRecordSize
+	- returns the size of the record using the schema.
+
+2. createSchema
+	- creates the schema based on the parameters passed.
+3. freeSchema
+	- deletes the schema and frees the space allocated to the schema to prevent memory leaks.
+
+
+ATTRIBUTE FUNCTIONS:
+-------------------
+These functions are used to get or set the attribute values of a record and create a new record for a given schema. Creating a new record should allocate enough memory to the data field to hold the binary representations for all attributes of this record as determined by the schema.  
+
+1. createRecord
+	- creates an empty record with the keyword '-'.
+	- it uses the schema to allocate space for the record.
+2. freeRecord
+	- deallocates the space for the record and also deallocates the space allcoated for the string in the record.
+3. getAttr
+	- returns the value of the attribute requested.
+	- the attrNum represents which attribute and we allocate space for the value and store it in that structure.
+4. setAttr
+	- we get the value for the attribute and store it in the record.
+	- based on the datatype of the value we perform different operations to store the value. 
